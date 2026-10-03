@@ -17,6 +17,7 @@ import re
 import anthropic
 
 from .anthropic_compat import anthropic_kwargs, first_text
+from .keyconfig import anthropic_api_key, missing_key_message
 from .generalist import GeneralistAgent
 from .specialist import SpecialistAgent
 
@@ -53,17 +54,9 @@ REASON: <one sentence>"""
 
 class Dispatcher:
     def __init__(self):
-        # Billing preference matches constrain/advocate: Wander key first.
-        api_key = next(
-            (
-                v
-                for n in ("WANDER_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY", "JMC_ANTHROPIC_API_KEY")
-                if (v := os.environ.get(n, "").strip())
-            ),
-            None,
-        )
+        api_key = anthropic_api_key()
         if not api_key:
-            raise RuntimeError("WANDER_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY required for classifier")
+            raise RuntimeError(missing_key_message("for classifier"))
         self._classifier = anthropic.Anthropic(api_key=api_key)
         model = os.environ.get("GENERALIST_MODEL", "").strip()
         self._generalist = GeneralistAgent(model=model) if model else None

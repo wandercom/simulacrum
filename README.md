@@ -13,7 +13,7 @@ Python 3.12 or 3.13 (the pinned dependencies were checked with 3.13):
 python3.13 -m venv .venv
 . .venv/bin/activate
 pip install -r fly_v8/requirements.txt
-# Supply WANDER_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY in your environment.
+# Supply ANTHROPIC_API_KEY in your environment.
 python run.py 'Every team needs a strong manager.'
 python run.py --spice spicy 'Every team needs a strong manager.'
 uvicorn app:app --app-dir fly_v8 --host 127.0.0.1 --port 8080
@@ -33,8 +33,10 @@ this repository. Run `python run.py --help` for options.
 
 ## Configuration
 
-- `WANDER_ANTHROPIC_API_KEY`, `ANTHROPIC_API_KEY`, `JMC_ANTHROPIC_API_KEY`:
-  first nonempty key wins, in that order.
+- `ANTHROPIC_API_KEY`: the Anthropic key (default lookup).
+- `SIMULACRUM_ANTHROPIC_API_KEY_ENV`: optional comma-separated list of env-var
+  names to try for the Anthropic key, in order (for example
+  `MY_ORG_ANTHROPIC_API_KEY,ANTHROPIC_API_KEY`); first nonempty one wins.
 - `SIMULACRUM_MODEL`: Anthropic model override (default `claude-sonnet-4-6`).
 - `GENERALIST_MODEL` and `OPENAI_API_KEY`: optional recall branch. Both are
   required to enable your own model. No private model identifier, model weights,
