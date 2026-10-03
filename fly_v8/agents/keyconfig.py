@@ -16,8 +16,14 @@ ANTHROPIC_API_KEY_ENV_OVERRIDE = "SIMULACRUM_ANTHROPIC_API_KEY_ENV"
 
 def anthropic_api_key_env_vars() -> tuple[str, ...]:
     raw = os.environ.get(ANTHROPIC_API_KEY_ENV_OVERRIDE, "").strip()
+    if not raw:
+        return DEFAULT_ANTHROPIC_API_KEY_ENV_VARS
     names = tuple(n.strip() for n in raw.split(",") if n.strip())
-    return names or DEFAULT_ANTHROPIC_API_KEY_ENV_VARS
+    if not names:
+        # An explicit override that names nothing must not silently fall back
+        # to the default key (and possibly another billing account).
+        raise RuntimeError(f"{ANTHROPIC_API_KEY_ENV_OVERRIDE} is set but names no environment variables")
+    return names
 
 
 def anthropic_api_key() -> str | None:

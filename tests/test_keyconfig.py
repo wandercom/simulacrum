@@ -41,5 +41,12 @@ class KeyConfigTest(unittest.TestCase):
             self.assertEqual(anthropic_api_key(), 'generic-key')
 
 
+    def test_empty_override_is_rejected(self):
+        env = {'SIMULACRUM_ANTHROPIC_API_KEY_ENV': ' , ', 'ANTHROPIC_API_KEY': 'generic-key'}
+        with patch.dict(os.environ, env, clear=True):
+            with self.assertRaises(RuntimeError):
+                anthropic_api_key()
+
+
 if __name__ == '__main__':
     unittest.main()
