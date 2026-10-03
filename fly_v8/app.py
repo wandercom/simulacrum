@@ -28,19 +28,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from agents.dispatcher import Dispatcher
+from agents.keyconfig import anthropic_api_key, missing_key_message
 
 ROOT = Path(__file__).parent
 STATIC = ROOT / "static"
 
-# Billing preference matches constrain/advocate: Wander key first.
-ANTHROPIC_API_KEY = next(
-    (
-        v
-        for n in ("WANDER_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY", "JMC_ANTHROPIC_API_KEY")
-        if (v := os.environ.get(n, "").strip())
-    ),
-    None,
-)
+ANTHROPIC_API_KEY = anthropic_api_key()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 SECRET_KEY = os.environ.get("SIMULACRUM_TOKEN") or secrets.token_hex(32)
 TURNSTILE_SECRET = os.environ.get("TURNSTILE_SECRET")  # cf turnstile server secret; if unset, verification is skipped
@@ -52,7 +45,7 @@ WINDOW_SECONDS = 24 * 3600
 CAP_PER_WINDOW = 20
 
 if not ANTHROPIC_API_KEY:
-    raise RuntimeError("ANTHROPIC_API_KEY env var required (for specialist + classifier)")
+    raise RuntimeError(missing_key_message("(for specialist + classifier)"))
 
 dispatcher = Dispatcher()
 print("simulacrum dispatcher loaded (optional generalist, specialist=v9.1)")

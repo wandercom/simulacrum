@@ -10,7 +10,7 @@ that expect a text-only contract. Two adjustments are needed:
      callers must scan for the first text-type block rather than assume
      `resp.content[0]`.
 
-Mirrors the reference implementation in ~/.claude/skills/simulacrum/run.py.
+Mirrors the reference implementation in the Simulacrum Claude Code skill.
 """
 
 from __future__ import annotations

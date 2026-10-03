@@ -28,6 +28,7 @@ from pathlib import Path
 import anthropic
 
 from .anthropic_compat import anthropic_kwargs, first_text
+from .keyconfig import anthropic_api_key, missing_key_message
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 PAIRS_PATH = DATA_DIR / "adversarial_pairs_annotated.json"
@@ -165,17 +166,9 @@ def _build_system_prompt(spice: str, n_examples: int) -> str:
 
 class SpecialistAgent:
     def __init__(self, model: str = DEFAULT_MODEL, n_examples: int = 12):
-        # Billing preference matches constrain/advocate: Wander key first.
-        api_key = next(
-            (
-                v
-                for n in ("WANDER_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY", "JMC_ANTHROPIC_API_KEY")
-                if (v := os.environ.get(n, "").strip())
-            ),
-            None,
-        )
+        api_key = anthropic_api_key()
         if not api_key:
-            raise RuntimeError("WANDER_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY required")
+            raise RuntimeError(missing_key_message())
         self.client = anthropic.Anthropic(api_key=api_key)
         self.model = model
         self.n_examples = n_examples
